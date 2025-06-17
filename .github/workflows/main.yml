@@ -15,10 +15,13 @@ jobs:
           fetch-depth: 0
           
       - name: checking gitleaks action
-        uses: cguajardo-imed/action@v0.0.2
+        uses: cguajardo-imed/action@v0.0.6
         id: gitleaks
 
       - name: Get Gitleaks Report
         if: always()
-        run: echo "${{ steps.gitleaks.outputs.report }}"
+        run: |
+          echo $GITHUB_OUTPUT
+          cat $GITHUB_OUTPUT
+          ls -la .
         
