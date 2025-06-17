@@ -21,7 +21,7 @@ jobs:
       - name: Get Gitleaks Report
         if: always()
         run: |
-          echo "${{ steps.gitleaks.outputs.report }}"
-          echo "#$GITHUB_OUTPUT#"
+          echo "#${{ steps.gitleaks.outputs.report }}#"
+          cat $GITHUB_OUTPUT
           ls -la .
         
