@@ -20,5 +20,7 @@ jobs:
 
       - name: Get Gitleaks Report
         if: always()
-        run: echo "${{ steps.gitleaks.outputs.report }}"
+        run: \
+          echo "${{ steps.gitleaks.outputs }}"
+          echo "$GITHUB_OUTPUT"
         
