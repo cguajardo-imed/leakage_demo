@@ -22,5 +22,5 @@ jobs:
         if: always()
         run: \
           echo "${{ steps.gitleaks.outputs }}"
-          echo "$GITHUB_OUTPUT"
+          ls -la .
         
