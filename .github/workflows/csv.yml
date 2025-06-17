@@ -1,0 +1,30 @@
+name: Scan for secrets CSV output
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test_job:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: checking gitleaks action
+        uses: cguajardo-imed/action@v0.0.9
+        id: gitleaks
+        with:
+          report_format: csv
+          stop_on_failure: false
+
+      - name: Get Gitleaks Results 
+        if: always()
+        run: |
+          echo "Scan successful: ${{ steps.gitleaks.outputs.success }}"
+          echo "Leaks found: ${{ steps.gitleaks.outputs.leaks_found }}"
+          echo "Report path: ${{ steps.gitleaks.outputs.report_path }}"
+          echo "Report content: ${{ steps.gitleaks.outputs.report_content }}"       
