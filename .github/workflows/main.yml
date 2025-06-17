@@ -15,7 +15,7 @@ jobs:
           fetch-depth: 0
           
       - name: checking gitleaks action
-        uses: cguajardo-imed/action@v0.0.7
+        uses: cguajardo-imed/action@v0.0.8
         id: gitleaks
 
       - name: Get Gitleaks Results 
