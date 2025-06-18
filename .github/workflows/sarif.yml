@@ -15,7 +15,7 @@ jobs:
           fetch-depth: 0
           
       - name: checking gitleaks action
-        uses: cguajardo-imed/action@v0.0.9
+        uses: cguajardo-imed/action@v0.0.10
         id: gitleaks
         with:
           report_format: sarif
