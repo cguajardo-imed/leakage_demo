@@ -1,4 +1,0 @@
-RuleID,Commit,File,SymlinkFile,Secret,Match,StartLine,EndLine,StartColumn,EndColumn,Author,Message,Date,Email,Fingerprint,Tags
-generic-api-key,,/github/workspace/.env,,wJalrXUtnFEMI/K7MDENG/bPxRfiCYU2RV7DYGOkhgF,AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYU2RV7DYGOkhgF,3,3,2,66,,,,,/github/workspace/.env:generic-api-key:3,
-aws-access-token,,/github/workspace/.env,,AKIAJINU2RV7DFARQJBQ,AKIAJINU2RV7DFARQJBQ,2,2,20,39,,,,,/github/workspace/.env:aws-access-token:2,
-jwt,,/github/workspace/index.js,,eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJzdWIiOiAiMTIzNDU2Nzg5MCIsICJuYW1lIjogIkpvaG4gRG9lIiwgImFkbWluIjogdHJ1ZX0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c,eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJzdWIiOiAiMTIzNDU2Nzg5MCIsICJuYW1lIjogIkpvaG4gRG9lIiwgImFkbWluIjogdHJ1ZX0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',11,11,19,179,,,,,/github/workspace/index.js:jwt:11,
