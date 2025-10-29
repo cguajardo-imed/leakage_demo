@@ -43,11 +43,9 @@ jobs:
             skip-dirs: '**/.npm/**'
     
         - name: Convert JSON to SARIF
-          if: github.ref == 'refs/heads/release'
           run: trivy convert --format sarif --output trivy-report.sarif trivy-report.json 
     
-        - name: Convert JSON to table and show 
-          if: github.ref == 'refs/heads/release'
+        - name: Convert JSON to table and show
           run: |
             trivy convert --format table --output trivy-report.txt trivy-report.json
             cat trivy-report.txt
@@ -57,14 +55,16 @@ jobs:
           uses: actions/upload-artifact@v4
           continue-on-error: true
           with:
-            name: trivy-${{ github.event.repository.name }}-${{ inputs.env }}
+            name: trivy-${{ github.event.repository.name }}-QA
             path: trivy-report.sarif
     
         - name: Send Trivy report
           run: |
-            curl --request POST \
-            --url https://vc.cl-qa.imedlatam.com/api/upload/sarif/${{ github.event.repository.name }} \
+            response=$(curl --request POST \
+            --url "https://vc.cl-qa.imedlatam.com/api/upload/sarif/${{ github.event.repository.name }}" \
             --header 'content-type: multipart/form-data' \
             --header "X-API-Key: ${{ secrets.CTOKEN }}" \
-            --form report=@./trivy-report.sarif
-          continue-on-error: true
+            --form report=@./trivy-report.sarif)
+
+            echo "$response"
+          continue-on-error: false
