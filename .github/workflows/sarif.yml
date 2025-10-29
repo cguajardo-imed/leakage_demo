@@ -38,8 +38,8 @@ jobs:
         uses: aquasecurity/trivy-action@master
         continue-on-error: true
         with:
-          scan-type: "image"
-          scan-ref: ${{ env.IMAGE_FULL }}
+          scan-type: "fs"
+          scan-ref: .
           format: "json"
           output: "trivy-report.json"
           severity: "HIGH,CRITICAL"
