@@ -2,14 +2,14 @@ name: Scan for secrets SARIF output
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 permissions:
-      id-token: write
-      contents: read
-      issues: write
+  id-token: write
+  contents: read
+  issues: write
 
 jobs:
   test_job:
@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          
+
       - name: checking gitleaks action
         uses: cguajardo-imed/action@v0.0.12
         id: gitleaks
@@ -26,50 +26,50 @@ jobs:
           report_format: sarif
           stop_on_failure: false
 
-      - name: Get Gitleaks Results 
+      - name: Get Gitleaks Results
         if: always()
         run: |
           echo "Scan successful: ${{ steps.gitleaks.outputs.success }}"
           echo "Leaks found: ${{ steps.gitleaks.outputs.leaks_found }}"
           echo "Report path: ${{ steps.gitleaks.outputs.report_path }}"
-          echo "Report content: ${{ steps.gitleaks.outputs.report_content }}"       
+          echo "Report content: ${{ steps.gitleaks.outputs.report_content }}"
 
       - name: Run Trivy vulnerability scanner
-          uses: aquasecurity/trivy-action@master
-          continue-on-error: true
-          with:
-            scan-type: 'image'
-            scan-ref: ${{ env.IMAGE_FULL }}
-            format: 'json'
-            output: 'trivy-report.json'
-            severity: 'HIGH,CRITICAL'
-            exit-code: '0'
-            ignore-unfixed: true
-            skip-dirs: '**/.npm/**'
-    
-        - name: Convert JSON to SARIF
-          run: trivy convert --format sarif --output trivy-report.sarif trivy-report.json 
-    
-        - name: Convert JSON to table and show
-          run: |
-            trivy convert --format table --output trivy-report.txt trivy-report.json
-            cat trivy-report.txt
-    
-        - name: Upload Trivy report
-          if: github.ref == 'refs/heads/release'
-          uses: actions/upload-artifact@v4
-          continue-on-error: true
-          with:
-            name: trivy-${{ github.event.repository.name }}-QA
-            path: trivy-report.sarif
-    
-        - name: Send Trivy report
-          run: |
-            response=$(curl --request POST \
-            --url "https://vc.cl-qa.imedlatam.com/api/upload/sarif/${{ github.event.repository.name }}" \
-            --header 'content-type: multipart/form-data' \
-            --header "X-API-Key: ${{ secrets.CTOKEN }}" \
-            --form report=@./trivy-report.sarif)
+        uses: aquasecurity/trivy-action@master
+        continue-on-error: true
+        with:
+          scan-type: "image"
+          scan-ref: ${{ env.IMAGE_FULL }}
+          format: "json"
+          output: "trivy-report.json"
+          severity: "HIGH,CRITICAL"
+          exit-code: "0"
+          ignore-unfixed: true
+          skip-dirs: "**/.npm/**"
 
-            echo "$response"
-          continue-on-error: false
+      - name: Convert JSON to SARIF
+        run: trivy convert --format sarif --output trivy-report.sarif trivy-report.json
+
+      - name: Convert JSON to table and show
+        run: |
+          trivy convert --format table --output trivy-report.txt trivy-report.json
+          cat trivy-report.txt
+
+      - name: Upload Trivy report
+        if: github.ref == 'refs/heads/release'
+        uses: actions/upload-artifact@v4
+        continue-on-error: true
+        with:
+          name: trivy-${{ github.event.repository.name }}-QA
+          path: trivy-report.sarif
+
+      - name: Send Trivy report
+        run: |
+          response=$(curl --request POST \
+          --url "https://vc.cl-qa.imedlatam.com/api/upload/sarif/${{ github.event.repository.name }}" \
+          --header 'content-type: multipart/form-data' \
+          --header "X-API-Key: ${{ secrets.CTOKEN }}" \
+          --form report=@./trivy-report.sarif)
+
+          echo "$response"
+        continue-on-error: false
