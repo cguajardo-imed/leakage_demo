@@ -75,6 +75,7 @@ jobs:
 
       - name: Send Trivy report
         run: |
+          find . -name "trivy-report.sarif"
           if [ -f ./trivy-report.sarif ]; then
             response=$(curl --request POST \
               --url "https://vc.cl-qa.imedlatam.com/api/upload/sarif/${{ github.event.repository.name }}" \
@@ -84,4 +85,5 @@ jobs:
             echo "$response"
           else
             echo "Report file missing"
+            find . -name "trivy-report.sarif"
           fi
