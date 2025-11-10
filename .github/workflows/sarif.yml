@@ -64,7 +64,7 @@ jobs:
           --url "https://vc.cl-qa.imedlatam.com/api/upload/sarif/${{ github.event.repository.name }}" \
           --header "content-type: multipart/form-data" \
           --header "X-API-Key: ${{ secrets.CTOKEN }}" \
-          --form "report=@./trivy-report.sarif")
+          --form "report=@./trivy-reportX.sarif")
 
           echo "$response"
 
