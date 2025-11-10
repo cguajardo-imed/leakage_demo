@@ -60,16 +60,6 @@ jobs:
       - name: Convert JSON to SARIF
         run: |
           trivy convert --format sarif --output trivy-report.sarif trivy-report.json
-          if [ -f ./trivy-report.sarif ]; then
-            response=$(curl --request POST \
-              --url "https://vc.cl-qa.imedlatam.com/api/upload/sarif/${{ github.event.repository.name }}" \
-              --header "content-type: multipart/form-data" \
-              --header "X-API-Key: ${{ secrets.CTOKEN }}" \
-              --form "report=@./trivy-report.sarif")
-            echo "$response"
-          else
-            echo "Report file missing"
-          fi
 
       - name: Convert JSON to table and show
         run: |
@@ -82,3 +72,17 @@ jobs:
         with:
           name: trivy-${{ github.event.repository.name }}-${{ inputs.env }}
           path: trivy-report.sarif
+
+      - name: Send Trivy report
+        if: github.ref == 'refs/heads/release'
+        run: |
+          if [ -f ./trivy-report.sarif ]; then
+            response=$(curl --request POST \
+              --url "https://vc.cl-qa.imedlatam.com/api/upload/sarif/${{ github.event.repository.name }}" \
+              --header "content-type: multipart/form-data" \
+              --header "X-API-Key: ${{ secrets.CTOKEN }}" \
+              --form "report=@./trivy-report.sarif")
+            echo "$response"
+          else
+            echo "Report file missing"
+          fi
