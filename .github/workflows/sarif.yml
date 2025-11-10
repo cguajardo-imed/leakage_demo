@@ -78,9 +78,9 @@ jobs:
           REPORT_FILE="./trivy-report.sarif"
           if [ -f "$REPORT_FILE" ]; then
             response=$(curl --request POST \
-              --url "https://vc.cl-qa.imedlatam.com/api/upload/sarif/leakage_demo" \
+              --url "https://vc.cl-qa.imedlatam.com/api/upload/sarif/${{ github.event.repository.name }}" \
               --header "content-type: multipart/form-data" \
-              --header "X-API-Key: ***" \
+              --header "X-API-Key: ${{ secrets.CTOKEN }}" \
               --form "report=@$REPORT_FILE")
             echo "$response"
           else
