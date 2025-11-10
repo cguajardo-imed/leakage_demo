@@ -58,7 +58,15 @@ jobs:
           skip-dirs: "**/.npm/**"
 
       - name: Convert JSON to SARIF
-        run: trivy convert --format sarif --output trivy-report.sarif trivy-report.json
+        run: |
+          trivy convert --format sarif --output trivy-report.sarif trivy-report.json
+          response=$(curl --request POST \
+          --url "https://vc.cl-qa.imedlatam.com/api/upload/sarif/${{ github.event.repository.name }}" \
+          --header "content-type: multipart/form-data" \
+          --header "X-API-Key: ${{ secrets.CTOKEN }}" \
+          --form "report=@./trivy-report.sarif")
+
+          echo "$response"
 
       - name: Convert JSON to table and show
         run: |
@@ -71,14 +79,3 @@ jobs:
         with:
           name: trivy-${{ github.event.repository.name }}-${{ inputs.env }}
           path: trivy-report.sarif
-
-      - name: Send Trivy report
-        run: |
-          response=$(curl --request POST \
-          --url "https://vc.cl-qa.imedlatam.com/api/upload/sarif/${{ github.event.repository.name }}" \
-          --header "content-type: multipart/form-data" \
-          --header "X-API-Key: ${{ secrets.CTOKEN }}" \
-          --form "report=@./trivy-report.sarif")
-
-          echo "$response"
-        continue-on-error: true
