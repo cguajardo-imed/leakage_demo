@@ -1,6 +1,12 @@
 name: Scan for secrets SARIF output
 
 on:
+  workflow_call:
+    inputs:
+      env:
+        description: "Specifies the country name + environment. Ex: cl-qa, ec-int"
+        required: true
+        type: string
   push:
     branches: [main]
   pull_request:
@@ -34,12 +40,16 @@ jobs:
           echo "Report path: ${{ steps.gitleaks.outputs.report_path }}"
           echo "Report content: ${{ steps.gitleaks.outputs.report_content }}"
 
+      - name: Build and tag docker image to Amazon ECR
+        run: |
+          docker build --build-arg NPM_TOKEN=${{ secrets.NPM_TOKEN }} -t test:latest .
+
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         continue-on-error: true
         with:
-          scan-type: "fs"
-          scan-ref: .
+          scan-type: "image"
+          scan-ref: test:latest
           format: "json"
           output: "trivy-report.json"
           severity: "HIGH,CRITICAL"
@@ -56,20 +66,19 @@ jobs:
           cat trivy-report.txt
 
       - name: Upload Trivy report
-        if: github.ref == 'refs/heads/release'
         uses: actions/upload-artifact@v4
         continue-on-error: true
         with:
-          name: trivy-${{ github.event.repository.name }}-QA
+          name: trivy-${{ github.event.repository.name }}-${{ inputs.env }}
           path: trivy-report.sarif
 
       - name: Send Trivy report
         run: |
           response=$(curl --request POST \
           --url "https://vc.cl-qa.imedlatam.com/api/upload/sarif/${{ github.event.repository.name }}" \
-          --header 'content-type: multipart/form-data' \
+          --header "content-type: multipart/form-data" \
           --header "X-API-Key: ${{ secrets.CTOKEN }}" \
-          --form report=@./trivy-report.sarif)
+          --form "report=@./trivy-report.sarif")
 
           echo "$response"
-        continue-on-error: false
+        continue-on-error: true
