@@ -73,18 +73,10 @@ jobs:
           name: trivy-${{ github.event.repository.name }}-${{ inputs.env }}
           path: trivy-report.sarif
 
-      - name: Send Trivy report
-        run: |
-          REPORT_FILE="./trivy-report.sarif"
-          if [ -f "$REPORT_FILE" ]; then
-            response=$(curl --request POST \
-              --url "https://vc.cl-qa.imedlatam.com/api/upload/sarif/${{ github.event.repository.name }}" \
-              --header "content-type: multipart/form-data" \
-              --header "X-API-Key: ${{ secrets.CTOKEN }}" \
-              --form "report=@$REPORT_FILE")
-            echo "$response"
-          else
-            echo "Report file missing"
-            find . -name "$REPORT_FILE"
-          fi
+      - name: Imed Cortex Action
+        uses: cguajardo-imed/cortex-uploader-action@v0.0.1
+        with:
+          endpoint_url: 'https://vc.cl-qa.imedlatam.com/api/upload/sarif/${{ github.event.repository.name }}'
+          api_key: ${{ secrets.CTOKEN }}
+          report_path: './trivy-report.sarif'
 
