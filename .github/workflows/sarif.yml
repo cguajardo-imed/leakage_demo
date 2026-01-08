@@ -76,6 +76,8 @@ jobs:
       - name: Imed Cortex Action
         uses: cguajardo-imed/cortex-uploader-action@v0.0.3
         with:
+          github_token: ${{ secrets.GHCR_TOKEN }}
+          registry_username: ${{ secrets.GHCR_USERNAME }}
           endpoint_url: 'https://vc.cl-qa.imedlatam.com/api/upload/sarif/${{ github.event.repository.name }}'
           api_key: ${{ secrets.CTOKEN }}
           report_path: './trivy-report.sarif'
