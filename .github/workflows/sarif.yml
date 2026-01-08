@@ -14,22 +14,15 @@ on:
 
 permissions:
   id-token: write
-  contents: read
+  contents: write  # ← Changed to WRITE (needed for docker build/push)
   issues: write
-  packages: read  # ← Added for GHCR access
+  packages: write  # ← Changed to WRITE (needed for GHCR)
+  actions: write   # ← Added for private action access + artifacts
 
 jobs:
   test_job:
     runs-on: ubuntu-latest
     steps:
-      # Move login to top with proper action
-      - name: Login to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -47,9 +40,8 @@ jobs:
           echo "Scan successful: ${{ steps.gitleaks.outputs.success }}"
           echo "Leaks found: ${{ steps.gitleaks.outputs.leaks_found }}"
           echo "Report path: ${{ steps.gitleaks.outputs.report_path }}"
-          echo "Report content: ${{ steps.gitleaks.outputs.report_content }}"
 
-      - name: Build and tag docker image to Amazon ECR
+      - name: Build docker image
         run: |
           docker build --build-arg NPM_TOKEN=${{ secrets.NPM_TOKEN }} -t test:latest .
 
@@ -58,7 +50,7 @@ jobs:
         continue-on-error: true
         with:
           scan-type: "image"
-          scan-ref: test:latest
+          scan-ref: "test:latest"
           format: "json"
           output: "trivy-report.json"
           severity: "HIGH,CRITICAL"
@@ -77,9 +69,8 @@ jobs:
 
       - name: Upload Trivy report
         uses: actions/upload-artifact@v4
-        continue-on-error: true
         with:
-          name: trivy-${{ github.event.repository.name }}-${{ inputs.env }}
+          name: trivy-${{ github.event.repository.name }}-${{ inputs.env || 'default' }}
           path: trivy-report.sarif
 
       - name: Imed Cortex Action
