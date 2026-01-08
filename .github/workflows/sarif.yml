@@ -16,11 +16,10 @@ permissions:
   id-token: write
   contents: read
   issues: write
+  packages: read
 
 jobs:
   test_job:
-    permissions:
-      packages: read
     runs-on: ubuntu-latest
     steps:
       - run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
