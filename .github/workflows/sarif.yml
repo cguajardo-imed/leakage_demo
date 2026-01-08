@@ -74,7 +74,7 @@ jobs:
           path: trivy-report.sarif
 
       - name: Imed Cortex Action
-        uses: cguajardo-imed/cortex-uploader-action@v0.0.1
+        uses: cguajardo-imed/cortex-uploader-action@latest
         with:
           endpoint_url: 'https://vc.cl-qa.imedlatam.com/api/upload/sarif/${{ github.event.repository.name }}'
           api_key: ${{ secrets.CTOKEN }}
